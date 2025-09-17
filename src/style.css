@@ -31,7 +31,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow: auto;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
 }
@@ -73,7 +73,7 @@ body {
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
-/* Schriftzug mit Farbverlauf von rechts nach links + Outline */
+/* Schriftzug mit Farbverlauf von links nach rechts + schwarze Outline */
 .gradient-text {
     background: linear-gradient(to right, #118AB2, #06D6A0, #FFD166, #FF6B6B);
     -webkit-background-clip: text;
@@ -91,7 +91,7 @@ body {
     flex: 1;
     display: flex;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .app-module {
@@ -288,7 +288,7 @@ body {
     padding: 0.5rem 0;
 }
 
-.nav-btn {
+..nav-btn {
     background: none;
     border: none;
     color: #fff;
