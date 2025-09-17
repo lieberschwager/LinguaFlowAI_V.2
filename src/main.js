@@ -1,4 +1,4 @@
-// main.js - Finale Version mit korrekten relativen Pfaden
+// main.js - Finale Version mit absoluten Pfaden für Texturen
 
 import * as THREE from './libs/three.module.js';
 
@@ -137,8 +137,8 @@ const globeRenderer = (() => {
 
         // Texturen laden (relative Pfade sind jetzt korrekt)
         const textureLoader = new THREE.TextureLoader();
-        const earthTexture = textureLoader.load('../public/assets/earth_atmos_2048.jpg');
-        const earthBumpMap = textureLoader.load('../public/assets/earth_specular_2048.jpg');
+        const earthTexture = textureLoader.load('/LinguaFlowAI_V.2/public/assets/earth_atmos_2048.jpg');
+        const earthBumpMap = textureLoader.load('/LinguaFlowAI_V.2/public/assets/earth_specular_2048.jpg');
 
         // Globus Material (MeshPhongMaterial für Lichteffekte)
         const material = new THREE.MeshPhongMaterial({
