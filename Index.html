@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Linguaflow</title>
-    <link rel="stylesheet" href="../src/style.css">
+    <!-- Style -->
+    <link rel="stylesheet" href="./src/style.css">
 </head>
 <body>
 
@@ -15,6 +16,7 @@
         </header>
 
         <main class="app-main">
+            <!-- Globus Modul -->
             <section id="module-globus" class="app-module active">
                 <canvas id="globeCanvas"></canvas>
                 <div class="globe-overlay-content">
@@ -24,6 +26,7 @@
                 </div>
             </section>
 
+            <!-- Vokabeltrainer Modul -->
             <section id="module-vokabeltrainer" class="app-module hidden">
                 <div class="word-card-container">
                     <div class="word-card">
@@ -41,6 +44,7 @@
                 </div>
             </section>
             
+            <!-- Monetarisierung Modul -->
             <section id="module-monetarisierung" class="app-module hidden">
                 <h2 class="module-title">Unterstütze Linguaflow</h2>
                 <div class="module-content">
@@ -69,6 +73,7 @@
         </footer>
     </div>
 
-    <script type="module" src="../src/main.js"></script>
+    <!-- Script -->
+    <script type="module" src="./src/main.js"></script>
 </body>
 </html>

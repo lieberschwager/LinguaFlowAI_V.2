@@ -1,4 +1,4 @@
-// main.js - Finale Version mit absoluten Pfaden für Texturen
+// main.js - Version mit dynamischem Asset-Pfad
 
 import * as THREE from './libs/three.module.js';
 
@@ -132,15 +132,18 @@ const globeRenderer = (() => {
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setClearColor(0x000000, 0);
 
-        // Globus Geometrie
-        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        // Dynamischer Asset-Pfad
+        const isLocal = window.location.hostname === "localhost" || window.location.hostname === "";
+        const assetBasePath = isLocal 
+            ? "/LinguaFlowAI_V.2/public/assets/"   // dein Handy-Server
+            : "./assets/";                        // GitHub Pages
 
-        // Texturen laden (relative Pfade sind jetzt korrekt)
+        // Texturen laden
         const textureLoader = new THREE.TextureLoader();
-        const earthTexture = textureLoader.load('/LinguaFlowAI_V.2/public/assets/earth_atmos_2048.jpg');
-        const earthBumpMap = textureLoader.load('/LinguaFlowAI_V.2/public/assets/earth_specular_2048.jpg');
+        const earthTexture = textureLoader.load(assetBasePath + "earth_atmos_2048.jpg");
+        const earthBumpMap = textureLoader.load(assetBasePath + "earth_specular_2048.jpg");
 
-        // Globus Material (MeshPhongMaterial für Lichteffekte)
+        // Globus Material
         const material = new THREE.MeshPhongMaterial({
             map: earthTexture,
             bumpMap: earthBumpMap,
@@ -149,13 +152,11 @@ const globeRenderer = (() => {
             shininess: 10,
         });
 
-        globe = new THREE.Mesh(geometry, material);
+        globe = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), material);
         scene.add(globe);
 
-        // Licht für Schatten und Glanz
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-        scene.add(ambientLight);
-
+        // Licht
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
         directionalLight.position.set(5, 3, 5);
         scene.add(directionalLight);
@@ -184,7 +185,6 @@ const globeRenderer = (() => {
         init: initGlobe
     };
 })();
-
 
 // --- Initialisierung der App ---
 document.addEventListener('DOMContentLoaded', () => {
