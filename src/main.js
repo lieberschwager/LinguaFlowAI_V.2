@@ -135,10 +135,10 @@ const globeRenderer = (() => {
         // Globus Geometrie
         const geometry = new THREE.SphereGeometry(1, 64, 64);
 
-        // Texturen laden (JETZT MIT KLEINEREN DATEIEN)
+        // Texturen laden (relative Pfade sind jetzt korrekt)
         const textureLoader = new THREE.TextureLoader();
-        const earthTexture = textureLoader.load('./assets/earth_atmos_1024.jpg');
-        const earthBumpMap = textureLoader.load('./assets/earth_specular_1024.jpg');
+        const earthTexture = textureLoader.load('../public/assets/earth_atmos_1024.jpg');
+        const earthBumpMap = textureLoader.load('../public/assets/earth_specular_1024.jpg');
 
         // Globus Material (MeshPhongMaterial für Lichteffekte)
         const material = new THREE.MeshPhongMaterial({
