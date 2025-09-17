@@ -135,7 +135,7 @@ const globeRenderer = (() => {
         // Dynamischer Asset-Pfad
         const isLocal = window.location.hostname === "localhost" || window.location.hostname === "";
         const assetBasePath = isLocal 
-            ? "/LinguaFlowAI_V.2/public/assets/"   // dein Handy-Server
+            ? "/LinguaFlowAI_V.2/assets/"   // dein Handy-Server
             : "./assets/";                        // GitHub Pages
 
         // Texturen laden
