@@ -73,18 +73,14 @@ body {
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
-/* Schriftzug mit Farbverlauf von links nach rechts + schwarze Outline */
+/* Schriftzug mit umgekehrtem Farbverlauf + dezente schwarze Umrandung */
 .gradient-text {
-    background: linear-gradient(to right, #118AB2, #06D6A0, #FFD166, #FF6B6B);
+    background: linear-gradient(-135deg, #FF6B6B, #FFD166, #06D6A0, #118AB2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     color: transparent;
-    text-shadow: 
-        -1px -1px 0 #000,  
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
+    text-shadow: 0 0 2px rgba(0,0,0,0.7);
 }
 
 .app-main {
