@@ -74,6 +74,13 @@
         </footer>
     </div>
 
+    <!-- Three.js per CDN -->
+    <script type="module">
+        import * as THREE from "https://cdn.skypack.dev/three@0.155.0";
+        window.THREE = THREE; // global verfügbar
+    </script>
+
+    <!-- danach dein Script -->
     <script type="module" src="src/main.js"></script>
 </body>
 </html>
