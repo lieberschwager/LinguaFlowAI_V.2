@@ -1,72 +1,190 @@
-// src/main.js
+// main.js - Vollständige Version mit Three.js Setup für den Globus
+
 import * as THREE from 'three';
 
-// Navigation zwischen den Modulen
-const navButtons = document.querySelectorAll('.nav-btn');
-const modules = document.querySelectorAll('.app-module');
+// --- Modul zur Steuerung der Benutzeroberfläche ---
+const uiManager = (() => {
+    const setupNavigation = () => {
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const modules = document.querySelectorAll('.app-module');
+        const exploreBtn = document.getElementById('btn-explore-language');
 
-navButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.getAttribute('data-target');
+        navButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const targetModuleId = e.currentTarget.dataset.target;
 
-    modules.forEach(mod => {
-      if (mod.id === target) {
-        mod.classList.add('active');
-        mod.classList.remove('hidden');
-      } else {
-        mod.classList.remove('active');
-        mod.classList.add('hidden');
-      }
-    });
+                modules.forEach(module => {
+                    if (module.id === targetModuleId) {
+                        module.classList.add('active');
+                    } else {
+                        module.classList.remove('active');
+                    }
+                });
 
-    navButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+
+                // Spezielle Aktion beim Wechsel zum Vokabeltrainer
+                if (targetModuleId === 'module-vokabeltrainer') {
+                    vocabTrainer.refresh();
+                }
+            });
+        });
+
+        // Button auf dem Globus, um zum Vokabeltrainer zu wechseln
+        if (exploreBtn) {
+            exploreBtn.addEventListener('click', () => {
+                document.getElementById('module-globus').classList.remove('active');
+                document.getElementById('module-vokabeltrainer').classList.add('active');
+                document.querySelector('.nav-btn[data-target="module-vokabeltrainer"]').classList.add('active');
+                document.querySelector('.nav-btn[data-target="module-globus"]').classList.remove('active');
+                vocabTrainer.refresh();
+            });
+        }
+    };
+
+    const setupWordCardFlip = () => {
+        const wordCard = document.querySelector('.word-card');
+        if (wordCard) {
+            wordCard.addEventListener('click', () => {
+                wordCard.classList.toggle('flipped');
+            });
+        }
+    };
+
+    return {
+        init: () => {
+            setupNavigation();
+            setupWordCardFlip();
+        }
+    };
+})();
+
+// --- Dummy-Daten für den Vokabeltrainer ---
+const dummyWords = [
+    { word: "Hallo", translation: "Hello" },
+    { word: "Tschüss", translation: "Goodbye" },
+    { word: "Sprache", translation: "Language" },
+    { word: "Welt", translation: "World" },
+    { word: "Lernen", translation: "To learn" },
+];
+
+// --- Vokabeltrainer-Logik ---
+const vocabTrainer = (() => {
+    let currentWordIndex = 0;
+    const wordCard = document.querySelector('.word-card');
+    const wordText = document.querySelector('.word-text');
+    const wordTranslation = document.querySelector('.word-translation');
+    const nextButton = document.getElementById('btn-next-word');
+
+    const updateWordCard = () => {
+        const currentWord = dummyWords[currentWordIndex];
+        if (wordText && wordTranslation) {
+            wordText.textContent = currentWord.word;
+            wordTranslation.textContent = currentWord.translation;
+            if (wordCard) wordCard.classList.remove('flipped');
+        }
+    };
+
+    const setupControls = () => {
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                currentWordIndex = (currentWordIndex + 1) % dummyWords.length;
+                updateWordCard();
+            });
+        }
+    };
+
+    return {
+        init: () => {
+            updateWordCard();
+            setupControls();
+        },
+        refresh: () => {
+            updateWordCard();
+            setupControls();
+        }
+    };
+})();
+
+// --- Globus-Logik (Three.js Integration) ---
+const globeRenderer = (() => {
+    let scene, camera, renderer, globe;
+
+    const initGlobe = () => {
+        const canvas = document.getElementById('globeCanvas');
+        if (!canvas) {
+            console.error('Canvas element with ID "globeCanvas" not found.');
+            return;
+        }
+
+        // Szene
+        scene = new THREE.Scene();
+        scene.background = null; // transparent
+
+        // Kamera
+        camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+        camera.position.z = 2;
+
+        // Renderer
+        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(canvas.width, canvas.height);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Asset-Pfad
+        const assetBasePath = "./assets/";
+
+        // Texturen laden
+        const textureLoader = new THREE.TextureLoader();
+        const earthTexture = textureLoader.load(assetBasePath + "earth_atmos_2048.jpg");
+        const earthBumpMap = textureLoader.load(assetBasePath + "earth_specular_2048.jpg");
+
+        // Globus-Material
+        const material = new THREE.MeshPhongMaterial({
+            map: earthTexture,
+            bumpMap: earthBumpMap,
+            bumpScale: 0.05,
+            specular: new THREE.Color('grey'),
+            shininess: 10,
+        });
+
+        // Globus-Mesh
+        globe = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), material);
+        scene.add(globe);
+
+        // Licht
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 3, 5);
+        scene.add(directionalLight);
+
+        // Animation
+        const animate = () => {
+            requestAnimationFrame(animate);
+            globe.rotation.y += 0.002;
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        // Resize-Handler
+        const onWindowResize = () => {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        };
+        window.addEventListener('resize', onWindowResize);
+    };
+
+    return {
+        init: initGlobe
+    };
+})();
+
+// --- Initialisierung der App ---
+document.addEventListener('DOMContentLoaded', () => {
+    uiManager.init();
+    globeRenderer.init();
+    vocabTrainer.init();
 });
-
-// Globus Setup mit Three.js
-const canvas = document.getElementById('globeCanvas');
-if (canvas) {
-  const scene = new THREE.Scene();
-
-  const camera = new THREE.PerspectiveCamera(
-    75,
-    canvas.clientWidth / canvas.clientHeight,
-    0.1,
-    1000
-  );
-
-  const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true
-  });
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(5, 3, 5);
-  scene.add(light);
-
-  const textureLoader = new THREE.TextureLoader();
-  const earthTexture = textureLoader.load('./assets/earth_atmos_2048.jpg');
-  const earthSpecular = textureLoader.load('./assets/earth_specular_2048.jpg');
-
-  const geometry = new THREE.SphereGeometry(2, 64, 64);
-  const material = new THREE.MeshPhongMaterial({
-    map: earthTexture,
-    specularMap: earthSpecular,
-    shininess: 10
-  });
-
-  const earth = new THREE.Mesh(geometry, material);
-  scene.add(earth);
-
-  camera.position.z = 5;
-
-  function animate() {
-    requestAnimationFrame(animate);
-    earth.rotation.y += 0.002;
-    renderer.render(scene, camera);
-  }
-
-  animate();
-}
