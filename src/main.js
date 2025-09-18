@@ -44,9 +44,17 @@ document.addEventListener("DOMContentLoaded", () => {
   scene.add(light);
   scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
-  const textureLoader = new THREE.TextureLoader();
-  const colorMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI/main/app/src/main/assets/textures/earth_day_v2.jpg");
-  const bumpMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI/main/app/src/main/assets/textures/earth_relief_exr.png");
+ const textureLoader = new THREE.TextureLoader();
+const colorMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_atmos_2048.jpg");
+const bumpMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_specular_2048.jpg");
+
+const globeMaterial = new THREE.MeshPhongMaterial({
+  map: colorMap,
+  bumpMap: bumpMap,
+  bumpScale: 0.05,
+  shininess: 10,
+  specular: new THREE.Color(0x333333),
+});
 
   const globeMaterial = new THREE.MeshPhongMaterial({
     map: colorMap,
