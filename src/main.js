@@ -1,190 +1,79 @@
-// main.js - Vollständige Version mit Three.js Setup für den Globus
+// src/main.js
+import * as THREE from './libs/three.module.js';
 
-import * as THREE from 'three';
+// === Globus Setup ===
+const canvas = document.getElementById("globeCanvas");
 
-// --- Modul zur Steuerung der Benutzeroberfläche ---
-const uiManager = (() => {
-    const setupNavigation = () => {
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const modules = document.querySelectorAll('.app-module');
-        const exploreBtn = document.getElementById('btn-explore-language');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(550, 550);
 
-        navButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const targetModuleId = e.currentTarget.dataset.target;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+camera.position.z = 2;
 
-                modules.forEach(module => {
-                    if (module.id === targetModuleId) {
-                        module.classList.add('active');
-                    } else {
-                        module.classList.remove('active');
-                    }
-                });
+// Erde laden
+const texture = new THREE.TextureLoader().load("./assets/earth_atmos_2048.jpg");
+const geometry = new THREE.SphereGeometry(0.9, 64, 64);
+const material = new THREE.MeshBasicMaterial({ map: texture });
+const globe = new THREE.Mesh(geometry, material);
+scene.add(globe);
 
-                navButtons.forEach(btn => btn.classList.remove('active'));
-                e.currentTarget.classList.add('active');
+// Licht (für realistischeres Bild)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+scene.add(ambientLight);
 
-                // Spezielle Aktion beim Wechsel zum Vokabeltrainer
-                if (targetModuleId === 'module-vokabeltrainer') {
-                    vocabTrainer.refresh();
-                }
-            });
-        });
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(2, 2, 3).normalize();
+scene.add(directionalLight);
 
-        // Button auf dem Globus, um zum Vokabeltrainer zu wechseln
-        if (exploreBtn) {
-            exploreBtn.addEventListener('click', () => {
-                document.getElementById('module-globus').classList.remove('active');
-                document.getElementById('module-vokabeltrainer').classList.add('active');
-                document.querySelector('.nav-btn[data-target="module-vokabeltrainer"]').classList.add('active');
-                document.querySelector('.nav-btn[data-target="module-globus"]').classList.remove('active');
-                vocabTrainer.refresh();
-            });
-        }
-    };
+// Animation
+function animate() {
+  requestAnimationFrame(animate);
+  globe.rotation.y += 0.002; // Rotation des Globus
+  renderer.render(scene, camera);
+}
+animate();
 
-    const setupWordCardFlip = () => {
-        const wordCard = document.querySelector('.word-card');
-        if (wordCard) {
-            wordCard.addEventListener('click', () => {
-                wordCard.classList.toggle('flipped');
-            });
-        }
-    };
+// === Modul Navigation ===
+const navButtons = document.querySelectorAll(".nav-btn");
+const modules = document.querySelectorAll(".app-module");
 
-    return {
-        init: () => {
-            setupNavigation();
-            setupWordCardFlip();
-        }
-    };
-})();
+navButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const target = btn.getAttribute("data-target");
 
-// --- Dummy-Daten für den Vokabeltrainer ---
-const dummyWords = [
-    { word: "Hallo", translation: "Hello" },
-    { word: "Tschüss", translation: "Goodbye" },
-    { word: "Sprache", translation: "Language" },
-    { word: "Welt", translation: "World" },
-    { word: "Lernen", translation: "To learn" },
-];
+    modules.forEach((mod) => {
+      mod.classList.add("hidden");
+      mod.classList.remove("active");
+    });
 
-// --- Vokabeltrainer-Logik ---
-const vocabTrainer = (() => {
-    let currentWordIndex = 0;
-    const wordCard = document.querySelector('.word-card');
-    const wordText = document.querySelector('.word-text');
-    const wordTranslation = document.querySelector('.word-translation');
-    const nextButton = document.getElementById('btn-next-word');
+    document.getElementById(target).classList.remove("hidden");
+    document.getElementById(target).classList.add("active");
 
-    const updateWordCard = () => {
-        const currentWord = dummyWords[currentWordIndex];
-        if (wordText && wordTranslation) {
-            wordText.textContent = currentWord.word;
-            wordTranslation.textContent = currentWord.translation;
-            if (wordCard) wordCard.classList.remove('flipped');
-        }
-    };
-
-    const setupControls = () => {
-        if (nextButton) {
-            nextButton.addEventListener('click', () => {
-                currentWordIndex = (currentWordIndex + 1) % dummyWords.length;
-                updateWordCard();
-            });
-        }
-    };
-
-    return {
-        init: () => {
-            updateWordCard();
-            setupControls();
-        },
-        refresh: () => {
-            updateWordCard();
-            setupControls();
-        }
-    };
-})();
-
-// --- Globus-Logik (Three.js Integration) ---
-const globeRenderer = (() => {
-    let scene, camera, renderer, globe;
-
-    const initGlobe = () => {
-        const canvas = document.getElementById('globeCanvas');
-        if (!canvas) {
-            console.error('Canvas element with ID "globeCanvas" not found.');
-            return;
-        }
-
-        // Szene
-        scene = new THREE.Scene();
-        scene.background = null; // transparent
-
-        // Kamera
-        camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
-        camera.position.z = 2;
-
-        // Renderer
-        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        renderer.setSize(canvas.width, canvas.height);
-        renderer.setPixelRatio(window.devicePixelRatio);
-
-        // Asset-Pfad
-        const assetBasePath = "./assets/";
-
-        // Texturen laden
-        const textureLoader = new THREE.TextureLoader();
-        const earthTexture = textureLoader.load(assetBasePath + "earth_atmos_2048.jpg");
-        const earthBumpMap = textureLoader.load(assetBasePath + "earth_specular_2048.jpg");
-
-        // Globus-Material
-        const material = new THREE.MeshPhongMaterial({
-            map: earthTexture,
-            bumpMap: earthBumpMap,
-            bumpScale: 0.05,
-            specular: new THREE.Color('grey'),
-            shininess: 10,
-        });
-
-        // Globus-Mesh
-        globe = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), material);
-        scene.add(globe);
-
-        // Licht
-        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(5, 3, 5);
-        scene.add(directionalLight);
-
-        // Animation
-        const animate = () => {
-            requestAnimationFrame(animate);
-            globe.rotation.y += 0.002;
-            renderer.render(scene, camera);
-        };
-        animate();
-
-        // Resize-Handler
-        const onWindowResize = () => {
-            const width = canvas.clientWidth;
-            const height = canvas.clientHeight;
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            renderer.setSize(width, height);
-        };
-        window.addEventListener('resize', onWindowResize);
-    };
-
-    return {
-        init: initGlobe
-    };
-})();
-
-// --- Initialisierung der App ---
-document.addEventListener('DOMContentLoaded', () => {
-    uiManager.init();
-    globeRenderer.init();
-    vocabTrainer.init();
+    navButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
 });
+
+// === Vokabeltrainer Flip ===
+const wordCard = document.querySelector(".word-card");
+if (wordCard) {
+  wordCard.addEventListener("click", () => {
+    wordCard.classList.toggle("flipped");
+  });
+}
+
+const nextWordBtn = document.getElementById("btn-next-word");
+if (nextWordBtn) {
+  nextWordBtn.addEventListener("click", () => {
+    alert("Nächstes Wort kommt später 🚀");
+  });
+}
+
+// === Button Sprachen entdecken ===
+const exploreBtn = document.getElementById("btn-explore-language");
+if (exploreBtn) {
+  exploreBtn.addEventListener("click", () => {
+    alert("Sprachen-Explorer in Arbeit 🌍");
+  });
+}
