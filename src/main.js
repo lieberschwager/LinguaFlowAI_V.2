@@ -1,38 +1,4 @@
-// src/main.js
 import * as THREE from './libs/three.module.js';
-
-// === Globus Setup ===
-const canvas = document.getElementById("globeCanvas");
-
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(550, 550);
-
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-camera.position.z = 2;
-
-// Erde laden
-const texture = new THREE.TextureLoader().load("./assets/earth_atmos_2048.jpg");
-const geometry = new THREE.SphereGeometry(0.9, 64, 64);
-const material = new THREE.MeshBasicMaterial({ map: texture });
-const globe = new THREE.Mesh(geometry, material);
-scene.add(globe);
-
-// Licht (für realistischeres Bild)
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(2, 2, 3).normalize();
-scene.add(directionalLight);
-
-// Animation
-function animate() {
-  requestAnimationFrame(animate);
-  globe.rotation.y += 0.002; // Rotation des Globus
-  renderer.render(scene, camera);
-}
-animate();
 
 // === Modul Navigation ===
 const navButtons = document.querySelectorAll(".nav-btn");
@@ -53,6 +19,58 @@ navButtons.forEach((btn) => {
     navButtons.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
   });
+});
+
+// === Globus Setup ===
+document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("globeCanvas");
+  if (!canvas) {
+    console.error("Canvas mit ID 'globeCanvas' nicht gefunden.");
+    return;
+  }
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(canvas.width, canvas.height);
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+  camera.position.set(0, 0, 5);
+  camera.lookAt(scene.position);
+
+  const light = new THREE.DirectionalLight(0xffffff, 2.5);
+  light.position.set(0, 0, 5);
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+  const textureLoader = new THREE.TextureLoader();
+  const colorMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI/main/app/src/main/assets/textures/earth_day_v2.jpg");
+  const bumpMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI/main/app/src/main/assets/textures/earth_relief_exr.png");
+
+  const globeMaterial = new THREE.MeshPhongMaterial({
+    map: colorMap,
+    bumpMap: bumpMap,
+    bumpScale: 0.05,
+    shininess: 10,
+    specular: new THREE.Color(0x333333),
+  });
+
+  const globeGeometry = new THREE.SphereGeometry(1.8, 64, 64);
+  const globe = new THREE.Mesh(globeGeometry, globeMaterial);
+  globe.rotation.y = Math.PI;
+
+  const globeGroup = new THREE.Group();
+  globeGroup.add(globe);
+  scene.add(globeGroup);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    globeGroup.rotation.y += 0.001;
+    renderer.render(scene, camera);
+  }
+
+  animate();
 });
 
 // === Vokabeltrainer Flip ===
