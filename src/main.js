@@ -1,4 +1,4 @@
-// main.js - Version mit dynamischem Asset-Pfad
+// main.js - Version mit dynamischem Asset-Pfad und fixem Canvas
 
 import * as THREE from './libs/three.module.js';
 
@@ -135,8 +135,8 @@ const globeRenderer = (() => {
         // Dynamischer Asset-Pfad
         const isLocal = window.location.hostname === "localhost" || window.location.hostname === "";
         const assetBasePath = isLocal 
-            ? "/LinguaFlowAI_V.2/assets/"   // dein Handy-Server
-            : "./assets/";                        // GitHub Pages
+            ? "/LinguaFlowAI_V.2/assets/"   // Handy / Localhost
+            : "./assets/";                  // GitHub Pages
 
         // Texturen laden
         const textureLoader = new THREE.TextureLoader();
@@ -167,16 +167,6 @@ const globeRenderer = (() => {
             globe.rotation.y += 0.002;
             renderer.render(scene, camera);
         };
-
-        // Responsiveness
-        const onWindowResize = () => {
-            const width = canvas.clientWidth;
-            const height = canvas.clientHeight;
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            renderer.setSize(width, height);
-        };
-        window.addEventListener('resize', onWindowResize);
 
         animate();
     };

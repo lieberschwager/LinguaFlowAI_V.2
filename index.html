@@ -9,14 +9,16 @@
 <body>
 
     <div class="app-container">
+        <!-- Header -->
         <header class="app-header">
             <h1 class="logo gradient-text">LinguaflowAI</h1>
             <img src="./assets/linguaflow_logo.png" alt="Linguaflow Logo" class="app-logo">
         </header>
 
+        <!-- Globus Modul -->
         <main class="app-main">
             <section id="module-globus" class="app-module active">
-                <canvas id="globeCanvas"></canvas>
+                <canvas id="globeCanvas" width="550" height="550"></canvas>
                 <div class="globe-overlay-content">
                     <h2 class="module-title">Dein Lern-Globus</h2>
                     <p class="globe-intro">Entdecke die Welt der Sprachen!</p>
@@ -24,6 +26,7 @@
                 </div>
             </section>
 
+            <!-- Vokabeltrainer -->
             <section id="module-vokabeltrainer" class="app-module hidden">
                 <div class="word-card-container">
                     <div class="word-card">
@@ -41,6 +44,7 @@
                 </div>
             </section>
             
+            <!-- Monetarisierung -->
             <section id="module-monetarisierung" class="app-module hidden">
                 <h2 class="module-title">Unterstütze Linguaflow</h2>
                 <div class="module-content">
@@ -51,6 +55,7 @@
             </section>
         </main>
 
+        <!-- Footer -->
         <footer class="app-footer">
             <nav class="app-nav">
                 <button class="nav-btn active" data-target="module-globus">
