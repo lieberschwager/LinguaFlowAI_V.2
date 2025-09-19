@@ -1,6 +1,6 @@
 import * as THREE from './libs/three.module.js';
 
-// === Modul Navigation ===
+// === Navigation ===
 const navButtons = document.querySelectorAll(".nav-btn");
 const modules = document.querySelectorAll(".app-module");
 
@@ -34,44 +34,49 @@ document.addEventListener("DOMContentLoaded", () => {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 0, 5);
 
-  const light = new THREE.DirectionalLight(0xffffff, 2.5);
-  light.position.set(0, 0, 5);
-  scene.add(light);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);
+  directionalLight.position.set(0, 0, 5);
+  scene.add(directionalLight);
   scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
   const textureLoader = new THREE.TextureLoader();
-  const colorMap = textureLoader.load(
-    "https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_atmos_2048.jpg"
-  );
-  const bumpMap = textureLoader.load(
-    "https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_specular_2048.jpg"
-  );
+  const colorMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_atmos_2048.jpg");
+  const specularMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_specular_2048.jpg");
+  const cloudMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_clouds_2048.png");
 
   const globeMaterial = new THREE.MeshPhongMaterial({
     map: colorMap,
-    bumpMap: bumpMap,
-    bumpScale: 0.05,
-    shininess: 10,
-    specular: new THREE.Color(0x333333),
+    specularMap: specularMap,
+    bumpMap: specularMap, // zweckentfremdet für Relief
+    bumpScale: 0.1,
+    shininess: 20,
+    specular: new THREE.Color(0x444444),
   });
 
   const globeGeometry = new THREE.SphereGeometry(1.8, 64, 64);
-  const globe = new THREE.Mesh(globeGeometry, globeMaterial);
-  globe.rotation.y = Math.PI;
+  const globeMesh = new THREE.Mesh(globeGeometry, globeMaterial);
+  globeMesh.rotation.y = Math.PI;
+
+  const cloudMaterial = new THREE.MeshPhongMaterial({
+    map: cloudMap,
+    transparent: true,
+    opacity: 0.6,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+
+  const cloudGeometry = new THREE.SphereGeometry(1.83, 64, 64);
+  const cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
+  cloudMesh.rotation.y = Math.PI;
 
   const globeGroup = new THREE.Group();
-  globeGroup.add(globe);
+  globeGroup.add(globeMesh);
+  globeGroup.add(cloudMesh);
   scene.add(globeGroup);
 
-  // === Resize-Logik ===
   function resizeRenderer() {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -88,14 +93,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function animate() {
     requestAnimationFrame(animate);
-    globeGroup.rotation.y += 0.001;
+    globeMesh.rotation.y += 0.001;
+    cloudMesh.rotation.y += 0.0015;
     renderer.render(scene, camera);
   }
 
   animate();
 });
 
-// === Vokabeltrainer Flip ===
+// === Vokabeltrainer ===
 const wordCard = document.querySelector(".word-card");
 if (wordCard) {
   wordCard.addEventListener("click", () => {
@@ -110,7 +116,7 @@ if (nextWordBtn) {
   });
 }
 
-// === Button Sprachen entdecken ===
+// === Sprach-Explorer ===
 const exploreBtn = document.getElementById("btn-explore-language");
 if (exploreBtn) {
   exploreBtn.addEventListener("click", () => {
