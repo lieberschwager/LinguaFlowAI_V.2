@@ -1,86 +1,52 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linguaflow</title>
-    <link rel="stylesheet" href="src/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linguaflow</title>
+  <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-
-    <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <h1 class="logo gradient-text">LinguaflowAI</h1>
-            <img src="./assets/linguaflow_logo.png" alt="Linguaflow Logo" class="app-logo">
-        </header>
-
-        <!-- Globus Modul -->
-        <main class="app-main">
-            <section id="module-globus" class="app-module active">
-                <canvas id="globeCanvas" width="550" height="550"></canvas>
-                <div class="globe-overlay-content">
-                    <h2 class="module-title">Dein Lern-Globus</h2>
-                    <p class="globe-intro">Entdecke die Welt der Sprachen!</p>
-                    <button id="btn-explore-language" class="control-btn">Sprachen entdecken</button>
-                </div>
-            </section>
-
-            <!-- Vokabeltrainer -->
-            <section id="module-vokabeltrainer" class="app-module hidden">
-                <div class="word-card-container">
-                    <div class="word-card">
-                        <div class="card-face card-front">
-                            <p class="word-text">Sprache</p>
-                            <small class="flip-hint">Tippe zum Umdrehen</small>
-                        </div>
-                        <div class="card-face card-back">
-                            <p class="word-translation">Language</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="controls">
-                    <button id="btn-next-word" class="control-btn">Nächstes Wort</button>
-                </div>
-            </section>
-            
-            <!-- Monetarisierung -->
-            <section id="module-monetarisierung" class="app-module hidden">
-                <h2 class="module-title">Unterstütze Linguaflow</h2>
-                <div class="module-content">
-                    <p>Hilf uns, diese App zu verbessern! Deine Unterstützung ermöglicht uns, mehr Sprachen und Features hinzuzufügen.</p>
-                    <a href="#" class="btn-cta btn-donate">Spenden</a>
-                    <a href="#" class="btn-cta btn-affiliate">Premium-Kurse entdecken</a>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <nav class="app-nav">
-                <button class="nav-btn active" data-target="module-globus">
-                    <span class="nav-icon">🌍</span>
-                    <span class="nav-label">Globus</span>
-                </button>
-                <button class="nav-btn" data-target="module-vokabeltrainer">
-                    <span class="nav-icon">📚</span>
-                    <span class="nav-label">Vokabeln</span>
-                </button>
-                <button class="nav-btn" data-target="module-monetarisierung">
-                    <span class="nav-icon">💖</span>
-                    <span class="nav-label">Support</span>
-                </button>
-            </nav>
-        </footer>
-    </div>
-
-    <!-- Three.js per CDN -->
-    <script type="module">
-        import * as THREE from "https://cdn.skypack.dev/three@0.155.0";
-        window.THREE = THREE; // global verfügbar
-    </script>
-
-    <!-- danach dein Script -->
-    <script type="module" src="src/main.js"></script>
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="logo gradient-text">LinguaflowAI</h1>
+      <img src="./assets/linguaflow_logo.png" alt="Linguaflow Logo" class="app-logo">
+    </header>
+    <main class="app-main">
+      <section id="module-globus" class="app-module active">
+        <div class="globe-center">
+          <canvas id="globeCanvas"></canvas>
+        </div>
+        <div class="globe-actions">
+          <button id="btn-explore-language" class="control-btn">Sprachen entdecken</button>
+        </div>
+      </section>
+      <!-- weitere Module ... -->
+    </main>
+    <footer class="app-footer">
+      <nav class="app-nav">
+        <button class="nav-btn active" data-target="module-globus">
+          <span class="nav-icon">🌍</span>
+          <span class="nav-label">Globus</span>
+        </button>
+        <button class="nav-btn" data-target="module-vokabeltrainer">
+          <span class="nav-icon">📚</span>
+          <span class="nav-label">Vokabeln</span>
+        </button>
+        <button class="nav-btn" data-target="module-neue-funktion">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Feature</span>
+        </button>
+        <button class="nav-btn" data-target="module-monetarisierung">
+          <span class="nav-icon">💖</span>
+          <span class="nav-label">Support</span>
+        </button>
+      </nav>
+    </footer>
+  </div>
+  <script type="module">
+    import * as THREE from './src/libs/three.module.js';
+    import './src/main.js';
+  </script>
 </body>
 </html>

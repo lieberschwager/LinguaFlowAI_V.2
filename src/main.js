@@ -30,31 +30,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setSize(canvas.width, canvas.height);
   renderer.setClearColor(0x000000, 0);
-  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
   camera.position.set(0, 0, 5);
-  camera.lookAt(scene.position);
 
   const light = new THREE.DirectionalLight(0xffffff, 2.5);
   light.position.set(0, 0, 5);
   scene.add(light);
   scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
- const textureLoader = new THREE.TextureLoader();
-const colorMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_atmos_2048.jpg");
-const bumpMap = textureLoader.load("https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_specular_2048.jpg");
-
-const globeMaterial = new THREE.MeshPhongMaterial({
-  map: colorMap,
-  bumpMap: bumpMap,
-  bumpScale: 0.05,
-  shininess: 10,
-  specular: new THREE.Color(0x333333),
-});
+  const textureLoader = new THREE.TextureLoader();
+  const colorMap = textureLoader.load(
+    "https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_atmos_2048.jpg"
+  );
+  const bumpMap = textureLoader.load(
+    "https://raw.githubusercontent.com/lieberschwager/LinguaFlowAI_V.2/main/assets/earth_specular_2048.jpg"
+  );
 
   const globeMaterial = new THREE.MeshPhongMaterial({
     map: colorMap,
@@ -71,6 +70,21 @@ const globeMaterial = new THREE.MeshPhongMaterial({
   const globeGroup = new THREE.Group();
   globeGroup.add(globe);
   scene.add(globeGroup);
+
+  // === Resize-Logik ===
+  function resizeRenderer() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    renderer.setSize(width, height, true);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+
+  window.addEventListener("resize", resizeRenderer);
+  resizeRenderer();
 
   function animate() {
     requestAnimationFrame(animate);
